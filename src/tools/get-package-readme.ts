@@ -12,6 +12,7 @@ import { ReadmeParser } from '../services/readme-parser.js';
 import { logger } from '../utils/logger.js';
 import { validatePodName, validateVersion } from '../utils/validators.js';
 import { PackageNotFoundError, VersionNotFoundError } from '../types/index.js';
+import { searchPackages } from './search-packages.js';
 
 export async function getPackageReadme(params: GetPackageReadmeParams): Promise<PackageReadmeResponse> {
   const { package_name, version = 'latest', include_examples = true } = params;
@@ -25,6 +26,18 @@ export async function getPackageReadme(params: GetPackageReadmeParams): Promise<
   }
 
   try {
+    // First, search to verify package exists
+    logger.debug(`Searching for package existence: ${package_name}`);
+    const searchResult = await searchPackages({ query: package_name, limit: 10 });
+    
+    // Check if the exact package name exists in search results
+    const exactMatch = searchResult.packages.find((pod: any) => pod.name === package_name);
+    if (!exactMatch) {
+      throw new Error(`Package '${package_name}' not found in CocoaPods registry`);
+    }
+    
+    logger.debug(`Package found in search results: ${package_name}`);
+
     // Get pod info from CocoaPods API
     const podInfo = await cocoaPodsAPI.getPodInfo(package_name);
     
@@ -130,6 +143,7 @@ export async function getPackageReadme(params: GetPackageReadmeParams): Promise<
       installation,
       basic_info: basicInfo,
       repository,
+      exists: true,
     };
 
     logger.info(`Successfully retrieved README for: ${package_name}@${podInfo.version}`);
@@ -139,7 +153,24 @@ export async function getPackageReadme(params: GetPackageReadmeParams): Promise<
     logger.error(`Failed to get package README for: ${package_name}`, { error });
     
     if (error instanceof PackageNotFoundError || error instanceof VersionNotFoundError) {
-      throw error;
+      // Return exists: false response instead of throwing
+      return {
+        package_name: package_name,
+        version: version || 'latest',
+        description: '',
+        readme_content: '',
+        usage_examples: [],
+        installation: { podfile: `pod '${package_name}'` },
+        basic_info: {
+          name: package_name,
+          version: version || 'latest',
+          description: '',
+          license: '',
+          authors: '',
+          platforms: {},
+        },
+        exists: false,
+      };
     }
     
     throw new Error(`Failed to get package README: ${error instanceof Error ? error.message : String(error)}`);

@@ -94,6 +94,7 @@ export interface PackageReadmeResponse {
   installation: InstallationInfo;
   basic_info: PackageBasicInfo;
   repository?: RepositoryInfo | undefined;
+  exists: boolean;
 }
 
 export interface PackageInfoResponse {
@@ -108,6 +109,7 @@ export interface PackageInfoResponse {
   dev_dependencies?: Record<string, string> | undefined;
   download_stats: DownloadStats;
   repository?: RepositoryInfo | undefined;
+  exists: boolean;
 }
 
 export interface SearchPackagesResponse {

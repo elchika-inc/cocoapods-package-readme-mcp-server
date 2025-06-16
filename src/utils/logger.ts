@@ -11,7 +11,7 @@ class Logger {
   private logLevel: LogLevel;
 
   constructor() {
-    this.logLevel = (process.env.LOG_LEVEL?.toLowerCase() as LogLevel) || 'info';
+    this.logLevel = (process.env.LOG_LEVEL?.toLowerCase() as LogLevel) || 'warn';
   }
 
   private shouldLog(level: LogLevel): boolean {

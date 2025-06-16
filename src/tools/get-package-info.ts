@@ -114,6 +114,7 @@ export async function getPackageInfo(params: GetPackageInfoParams): Promise<Pack
       dev_dependencies: devDependencies,
       download_stats: downloadStats,
       repository,
+      exists: true,
     };
 
     logger.info(`Successfully retrieved package info for: ${package_name}`);
@@ -123,7 +124,17 @@ export async function getPackageInfo(params: GetPackageInfoParams): Promise<Pack
     logger.error(`Failed to get package info for: ${package_name}`, { error });
     
     if (error instanceof PackageNotFoundError) {
-      throw error;
+      // Return exists: false response instead of throwing
+      return {
+        package_name: package_name,
+        latest_version: '',
+        description: '',
+        authors: '',
+        license: '',
+        platforms: {},
+        download_stats: { last_day: 0, last_week: 0, last_month: 0 },
+        exists: false,
+      };
     }
     
     throw new Error(`Failed to get package info: ${error instanceof Error ? error.message : String(error)}`);
