@@ -80,7 +80,7 @@ export function validateScore(score: number, fieldName: string): void {
 export function sanitizeSearchQuery(query: string): string {
   // Remove potentially dangerous characters and normalize whitespace
   return query
-    .replace(/[<>\"'&]/g, '') // Remove HTML/XML dangerous characters
+    .replace(/[<>"'&]/g, '') // Remove HTML/XML dangerous characters
     .replace(/\s+/g, ' ') // Normalize whitespace
     .trim();
 }

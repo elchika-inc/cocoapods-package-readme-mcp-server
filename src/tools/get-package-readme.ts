@@ -4,8 +4,7 @@ import type {
   UsageExample,
   InstallationInfo,
   PackageBasicInfo,
-  RepositoryInfo,
-  AuthorInfo
+  RepositoryInfo
 } from '../types/index.js';
 import { cocoaPodsAPI, CocoaPodsAPI } from '../services/cocoapods-api.js';
 import { githubAPI } from '../services/github-api.js';

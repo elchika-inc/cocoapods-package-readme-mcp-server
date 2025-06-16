@@ -222,10 +222,10 @@ export class ReadmeParser {
     logger.debug('Cleaning README content');
 
     // Remove or replace problematic content
-    let cleaned = readme
+    const cleaned = readme
       // Remove badges (shields.io, etc.)
-      .replace(/\[\!\[.*?\]\(.*?\)\]\(.*?\)/g, '')
-      .replace(/\!\[.*?\]\(.*?shields\.io.*?\)/g, '')
+      .replace(/\[!\[.*?\]\(.*?\)\]\(.*?\)/g, '')
+      .replace(/!\[.*?\]\(.*?shields\.io.*?\)/g, '')
       // Remove HTML comments
       .replace(/<!--[\s\S]*?-->/g, '')
       // Clean up multiple empty lines
@@ -258,7 +258,7 @@ export class ReadmeParser {
     }
 
     // Extract Swift Package Manager URL
-    const spmMatch = readme.match(/https:\/\/github\.com\/[^\s\)]+/);
+    const spmMatch = readme.match(/https:\/\/github\.com\/[^\s)]+/);
     if (spmMatch) {
       instructions.spm = spmMatch[0];
     }
