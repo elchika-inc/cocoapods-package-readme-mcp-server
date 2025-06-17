@@ -23,8 +23,8 @@ import {
 } from './types/index.js';
 
 const TOOL_DEFINITIONS = {
-  get_package_readme: {
-    name: 'get_package_readme',
+  get_readme_from_cocoapods: {
+    name: 'get_readme_from_cocoapods',
     description: 'Get CocoaPods package README and usage examples',
     inputSchema: {
       type: 'object',
@@ -47,8 +47,8 @@ const TOOL_DEFINITIONS = {
       required: ['package_name'],
     },
   },
-  get_package_info: {
-    name: 'get_package_info',
+  get_package_info_from_cocoapods: {
+    name: 'get_package_info_from_cocoapods',
     description: 'Get CocoaPods package basic information and dependencies',
     inputSchema: {
       type: 'object',
@@ -71,8 +71,8 @@ const TOOL_DEFINITIONS = {
       required: ['package_name'],
     },
   },
-  search_packages: {
-    name: 'search_packages',
+  search_packages_from_cocoapods: {
+    name: 'search_packages_from_cocoapods',
     description: 'Search for CocoaPods packages',
     inputSchema: {
       type: 'object',
@@ -159,13 +159,13 @@ export class CocoaPodsPackageReadmeMcpServer {
         }
 
         switch (name) {
-          case 'get_package_readme':
+          case 'get_readme_from_cocoapods':
             return await this.handleGetPackageReadme(this.validateGetPackageReadmeParams(args));
           
-          case 'get_package_info':
+          case 'get_package_info_from_cocoapods':
             return await this.handleGetPackageInfo(this.validateGetPackageInfoParams(args));
           
-          case 'search_packages':
+          case 'search_packages_from_cocoapods':
             return await this.handleSearchPackages(this.validateSearchPackagesParams(args));
           
           default:
