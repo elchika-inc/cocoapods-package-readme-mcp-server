@@ -1,12 +1,11 @@
 # CocoaPods Package README MCP Server
 
+[![license](https://img.shields.io/npm/l/cocoapods-package-readme-mcp-server)](https://github.com/elchika-inc/cocoapods-package-readme-mcp-server/blob/main/LICENSE)
 [![npm version](https://img.shields.io/npm/v/cocoapods-package-readme-mcp-server)](https://www.npmjs.com/package/cocoapods-package-readme-mcp-server)
 [![npm downloads](https://img.shields.io/npm/dm/cocoapods-package-readme-mcp-server)](https://www.npmjs.com/package/cocoapods-package-readme-mcp-server)
-[![GitHub stars](https://img.shields.io/github/stars/naoto24kawa/package-readme-mcp-servers)](https://github.com/naoto24kawa/package-readme-mcp-servers)
-[![GitHub issues](https://img.shields.io/github/issues/naoto24kawa/package-readme-mcp-servers)](https://github.com/naoto24kawa/package-readme-mcp-servers/issues)
-[![license](https://img.shields.io/npm/l/cocoapods-package-readme-mcp-server)](https://github.com/naoto24kawa/package-readme-mcp-servers/blob/main/LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/elchika-inc/cocoapods-package-readme-mcp-server)](https://github.com/elchika-inc/cocoapods-package-readme-mcp-server)
 
-An MCP (Model Context Protocol) server for fetching CocoaPods package README and usage information.
+A Model Context Protocol (MCP) server for retrieving README files and package information from CocoaPods with comprehensive documentation extraction.
 
 ## Features
 
