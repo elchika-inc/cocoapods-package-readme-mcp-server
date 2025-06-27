@@ -1,4 +1,4 @@
-import { describe, it, expect } from '@jest/globals';
+import { describe, it, expect } from 'vitest';
 import { validatePodName, validateVersion, validateSearchQuery } from '../src/utils/validators.js';
 import { PackageReadmeMcpError } from '../src/types/index.js';
 
