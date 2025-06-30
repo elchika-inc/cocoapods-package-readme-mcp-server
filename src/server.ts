@@ -7,6 +7,7 @@ import {
   GetPackageInfoParams,
   SearchPackagesParams,
 } from './types/index.js';
+import { validateParams, validatePodName, validateVersion, validateSearchQuery, validateLimit, validateScore } from './utils/validators.js';
 
 const TOOL_DEFINITIONS: Record<string, ToolDefinition> = {
   get_readme_from_cocoapods: {
@@ -129,106 +130,65 @@ export class CocoaPodsPackageReadmeMcpServer extends BasePackageServer {
   }
 
   private validateGetPackageReadmeParams(args: unknown): GetPackageReadmeParams {
-    if (!args || typeof args !== 'object') {
-      throw new Error('Arguments must be an object');
-    }
-
-    const params = args as Record<string, unknown>;
-
-    if (!params.package_name || typeof params.package_name !== 'string') {
-      throw new Error('package_name is required and must be a string');
-    }
-
-    const result: GetPackageReadmeParams = {
-      package_name: params.package_name,
-    };
-    
-    if (params.version !== undefined) {
-      if (typeof params.version !== 'string') {
-        throw new Error('version must be a string');
+    return validateParams<GetPackageReadmeParams>(args, {
+      package_name: { 
+        type: 'string', 
+        required: true, 
+        validator: validatePodName 
+      },
+      version: { 
+        type: 'string', 
+        required: false, 
+        validator: (v: string) => v && validateVersion(v) 
+      },
+      include_examples: { 
+        type: 'boolean', 
+        required: false 
       }
-      result.version = params.version;
-    }
-    
-    if (params.include_examples !== undefined) {
-      if (typeof params.include_examples !== 'boolean') {
-        throw new Error('include_examples must be a boolean');
-      }
-      result.include_examples = params.include_examples;
-    }
-    
-    return result;
+    });
   }
 
   private validateGetPackageInfoParams(args: unknown): GetPackageInfoParams {
-    if (!args || typeof args !== 'object') {
-      throw new Error('Arguments must be an object');
-    }
-
-    const params = args as Record<string, unknown>;
-
-    if (!params.package_name || typeof params.package_name !== 'string') {
-      throw new Error('package_name is required and must be a string');
-    }
-
-    const result: GetPackageInfoParams = {
-      package_name: params.package_name,
-    };
-    
-    if (params.include_dependencies !== undefined) {
-      if (typeof params.include_dependencies !== 'boolean') {
-        throw new Error('include_dependencies must be a boolean');
+    return validateParams<GetPackageInfoParams>(args, {
+      package_name: { 
+        type: 'string', 
+        required: true, 
+        validator: validatePodName 
+      },
+      include_dependencies: { 
+        type: 'boolean', 
+        required: false 
+      },
+      include_dev_dependencies: { 
+        type: 'boolean', 
+        required: false 
       }
-      result.include_dependencies = params.include_dependencies;
-    }
-    
-    if (params.include_dev_dependencies !== undefined) {
-      if (typeof params.include_dev_dependencies !== 'boolean') {
-        throw new Error('include_dev_dependencies must be a boolean');
-      }
-      result.include_dev_dependencies = params.include_dev_dependencies;
-    }
-    
-    return result;
+    });
   }
 
   private validateSearchPackagesParams(args: unknown): SearchPackagesParams {
-    if (!args || typeof args !== 'object') {
-      throw new Error('Arguments must be an object');
-    }
-
-    const params = args as Record<string, unknown>;
-
-    if (!params.query || typeof params.query !== 'string') {
-      throw new Error('query is required and must be a string');
-    }
-
-    const result: SearchPackagesParams = {
-      query: params.query,
-    };
-    
-    if (params.limit !== undefined) {
-      if (typeof params.limit !== 'number' || params.limit < 1 || params.limit > 250) {
-        throw new Error('limit must be a number between 1 and 250');
+    return validateParams<SearchPackagesParams>(args, {
+      query: { 
+        type: 'string', 
+        required: true, 
+        validator: validateSearchQuery 
+      },
+      limit: { 
+        type: 'number', 
+        required: false, 
+        validator: validateLimit 
+      },
+      quality: { 
+        type: 'number', 
+        required: false, 
+        validator: (v: number) => validateScore(v, 'quality') 
+      },
+      popularity: { 
+        type: 'number', 
+        required: false, 
+        validator: (v: number) => validateScore(v, 'popularity') 
       }
-      result.limit = params.limit;
-    }
-    
-    if (params.quality !== undefined) {
-      if (typeof params.quality !== 'number' || params.quality < 0 || params.quality > 1) {
-        throw new Error('quality must be a number between 0 and 1');
-      }
-      result.quality = params.quality;
-    }
-    
-    if (params.popularity !== undefined) {
-      if (typeof params.popularity !== 'number' || params.popularity < 0 || params.popularity > 1) {
-        throw new Error('popularity must be a number between 0 and 1');
-      }
-      result.popularity = params.popularity;
-    }
-    
-    return result;
+    });
   }
 }
 

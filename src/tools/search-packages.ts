@@ -4,7 +4,7 @@ import type {
   PackageSearchResult,
   RepositoryInfo
 } from '../types/index.js';
-import { cocoaPodsAPI, CocoaPodsAPI } from '../services/cocoapods-api.js';
+import { cocoaPodsAPI, CocoaPodsMockService } from '../services/cocoapods-api.js';
 import { logger } from '../utils/logger.js';
 import { validateSearchQuery, validateLimit, validateScore, sanitizeSearchQuery } from '../utils/validators.js';
 
@@ -52,7 +52,7 @@ export async function searchPackages(params: SearchPackagesParams): Promise<Sear
       // Build repository info
       let repository: RepositoryInfo | undefined;
       if (pod.source?.git) {
-        const repoInfo = CocoaPodsAPI.extractRepositoryInfo({ git: pod.source.git });
+        const repoInfo = CocoaPodsMockService.extractRepositoryInfo({ git: pod.source.git });
         if (repoInfo) {
           repository = {
             type: 'git',

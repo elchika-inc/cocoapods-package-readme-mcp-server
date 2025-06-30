@@ -40,8 +40,10 @@ async function main(): Promise<void> {
   };
 
   // Register signal handlers
-  process.on('SIGINT', () => handleShutdown('SIGINT'));
-  process.on('SIGTERM', () => handleShutdown('SIGTERM'));
+  const signalNames = ['SIGINT', 'SIGTERM'] as const;
+  signalNames.forEach(signal => {
+    process.on(signal, () => handleShutdown(signal));
+  });
   
   // Handle uncaught exceptions and rejections
   process.on('uncaughtException', (error) => {

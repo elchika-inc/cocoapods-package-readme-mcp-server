@@ -93,3 +93,45 @@ export function isValidUrl(url: string): boolean {
     return false;
   }
 }
+
+interface ValidationRule {
+  type: 'string' | 'number' | 'boolean';
+  required: boolean;
+  validator?: (value: any) => void;
+  transform?: (value: any) => any;
+}
+
+interface ValidationSchema {
+  [key: string]: ValidationRule;
+}
+
+export function validateParams<T>(args: unknown, schema: ValidationSchema): T {
+  if (!args || typeof args !== 'object') {
+    throw new Error('Arguments must be an object');
+  }
+
+  const params = args as Record<string, unknown>;
+  const result: Record<string, unknown> = {};
+
+  for (const [key, rule] of Object.entries(schema)) {
+    const value = params[key];
+
+    if (rule.required && (value === undefined || value === null)) {
+      throw new Error(`${key} is required`);
+    }
+
+    if (value !== undefined && value !== null) {
+      if (typeof value !== rule.type) {
+        throw new Error(`${key} must be a ${rule.type}`);
+      }
+
+      if (rule.validator) {
+        rule.validator(value);
+      }
+
+      result[key] = rule.transform ? rule.transform(value) : value;
+    }
+  }
+
+  return result as T;
+}

@@ -3,13 +3,21 @@ import { PackageNotFoundError, NetworkError } from '../types/index.js';
 import { logger } from '../utils/logger.js';
 import { withRetry, handleHttpError } from '../utils/error-handler.js';
 import { cache, CacheKeys } from './cache.js';
+import { getKnownPodConfig, isKnownPod } from './known-pods.js';
 
-export class CocoaPodsAPI {
-  private readonly baseUrl: string;
+/**
+ * CocoaPods Mock Service
+ * 
+ * Note: The official CocoaPods.org API has been deprecated.
+ * This service provides mock data while maintaining the same interface
+ * for potential future API integration.
+ */
+export class CocoaPodsMockService {
+  private readonly deprecatedBaseUrl: string;
   private readonly requestTimeout: number;
 
   constructor() {
-    this.baseUrl = 'https://cocoapods.org/api/v1';
+    this.deprecatedBaseUrl = 'https://cocoapods.org/api/v1';
     this.requestTimeout = parseInt(process.env.REQUEST_TIMEOUT || '30000', 10);
   }
 
@@ -52,20 +60,19 @@ export class CocoaPodsAPI {
       return cached;
     }
 
-    // CocoaPods.org API has been deprecated
-    // Return mock data that indicates the pod exists but with limited info
-    // The main functionality relies on GitHub API for README fetching
+    const knownPod = getKnownPodConfig(podName);
+    
     const mockData: CocoaPodsPackageInfo = {
       name: podName,
       version: 'latest',
-      summary: `CocoaPods package: ${podName}`,
-      description: `CocoaPods package: ${podName}. API deprecated - using GitHub for README.`,
-      homepage: '',
+      summary: knownPod?.summary || `CocoaPods package: ${podName}`,
+      description: knownPod?.description || `CocoaPods package: ${podName}. API deprecated - using GitHub for README.`,
+      homepage: knownPod?.homepage || '',
       source: {
-        git: `https://github.com/${podName}/${podName}.git`
+        git: knownPod?.githubUrl || `https://github.com/${podName}/${podName}.git`
       },
       authors: {},
-      license: 'Unknown',
+      license: knownPod?.license || 'Unknown',
       platforms: {
         ios: '9.0'
       },
@@ -74,23 +81,6 @@ export class CocoaPodsAPI {
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
     };
-
-    // For well-known pods, provide better repository URLs
-    const knownPods: Record<string, string> = {
-      'Alamofire': 'https://github.com/Alamofire/Alamofire.git',
-      'AFNetworking': 'https://github.com/AFNetworking/AFNetworking.git',
-      'SDWebImage': 'https://github.com/SDWebImage/SDWebImage.git',
-      'Kingfisher': 'https://github.com/onevcat/Kingfisher.git',
-      'SnapKit': 'https://github.com/SnapKit/SnapKit.git',
-      'RxSwift': 'https://github.com/ReactiveX/RxSwift.git',
-      'Realm': 'https://github.com/realm/realm-swift.git'
-    };
-
-    if (knownPods[podName]) {
-      mockData.source.git = knownPods[podName];
-      mockData.summary = `Popular CocoaPods package: ${podName}`;
-      mockData.description = `Popular CocoaPods package: ${podName}. README fetched from GitHub.`;
-    }
     
     // Cache the result
     cache.set(cacheKey, mockData);
@@ -188,4 +178,4 @@ export class CocoaPodsAPI {
   }
 }
 
-export const cocoaPodsAPI = new CocoaPodsAPI();
+export const cocoaPodsAPI = new CocoaPodsMockService();
